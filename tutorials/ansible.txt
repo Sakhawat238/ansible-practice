@@ -15,3 +15,9 @@ ansible all -m apt -a "name=<package_name> state=latest" --become --ask-become-p
 ansible all -m apt -a upgrade=dist --become --ask-become-pass
 
 ansible-playbook --ask-become-pass <playbook_name>.yml
+
+ansible-playbook --list-tags <playbook_name>.yml
+
+ansible-playbook --tags <tag_name> --ask-become-pass <playbook_name>.yml
+
+ansible-playbook --tags "<tag1_name>,<tag2_name>" --ask-become-pass <playbook_name>.yml
