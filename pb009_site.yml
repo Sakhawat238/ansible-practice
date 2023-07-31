@@ -9,6 +9,7 @@
     apt:
       upgrade: dist
       update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Ubuntu"
 
   - name: install updates (CentOS)
@@ -16,6 +17,7 @@
     dnf:
       update_only: yes
       upgrade_cache: yes
+    changed_when: false
     when: ansible_distribution == "CentOS"
 
 

@@ -1,0 +1,45 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install updates (CentOS)
+    tags: always
+    dnf:
+      update_only: yes
+      upgrade_cache: yes
+    when: ansible_distribution == "CentOS"
+
+
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: creating user name asus
+    tags: always
+    user:
+      name: asus
+      group: root
+  
+  - name: add ssh key for asus
+    tags: always
+    authorized_key:
+      user: asus
+      key: "ssh......................"
+
+  - name: add sudoers file for asus
+    copy:
+      src: sudoer_asus
+      dest: /etc/sudoers.d/asus
+      onwer: root
+      group: root
+      mode: 0440
