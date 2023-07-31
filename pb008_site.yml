@@ -1,0 +1,101 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install updates (CentOS)
+    tags: always
+    dnf:
+      update_only: yes
+      upgrade_cache: yes
+    when: ansible_distribution == "CentOS"
+
+
+- hosts: web_servers
+  become: true
+  tasks:    
+
+  - name: install apache and php packages for Ubuntu
+    tags: apache, apache2, ubuntu
+    apt:
+      name: 
+        - apache2
+        - libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install apache and php packages for CentOS
+    tags: apache, httpd, centos
+    dnf:
+      name: 
+        - httpd
+        - php
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: copy deafult html file for servers
+    tags: apache, apache2, httpd
+    copy:
+      src: sample.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
+
+
+- hosts: workstations
+  become: true
+  tasks:
+
+    - name: install unzip
+      package:
+        name: unzip
+
+    - name: install terraform
+      unarchive:
+        src: https://.......terraform_0.12.28_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        owner: root
+        group: root
+        mode: 0755
+
+
+
+- hosts: db_servers
+  become: true
+  tasks:
+
+    - name: install mariadb in Ubuntu
+      tags: db, mariadb, ubuntu
+      apt:
+        name: mariadb-server
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install mariadb server in CentOS
+      tags: db, mariadb, centos
+      dnf:
+        name: mariadb
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+
+- host: file_servers
+  become: true
+  tasks:
+
+    - name: install samba package
+      tags: samba
+      package:
+        name: samba
+        state: latest
