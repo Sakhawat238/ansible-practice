@@ -1,0 +1,50 @@
+- name: install apache and php packages for Ubuntu
+  tags: apache, apache2, ubuntu
+  apt:
+    name: 
+      - apache2
+      - libapache2-mod-php
+    state: latest
+  when: ansible_distribution == "Ubuntu"
+
+- name: install apache and php packages for CentOS
+  tags: apache, httpd, centos
+  dnf:
+    name: 
+      - httpd
+      - php
+    state: latest
+  when: ansible_distribution == "CentOS"
+
+- name: start httpd (CentOS)
+  tags: apache, httpd, centos
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  when: ansible_distribution == "CentOS"
+
+- name: doing somechanges in a config file
+  tags: apache, httpd, centos
+  lineinfile:
+    path: /etc/hhtpd/conf/httpd.conf
+    regexp: '^ServerAdmin'
+    line: ServerAdmin somebody@somewhere.net
+  when: ansible_distribution == "CentOS"
+  register: httpd_ggwp
+
+- name: restart httpd (centos)
+  tags: apache, httpd, centos
+  service:
+    name: httpd
+    state: restarted
+  when: httpd_ggwp.changed
+
+- name: copy deafult html file for servers
+  tags: apache, apache2, httpd
+  copy:
+    src: sample.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0644

@@ -1,0 +1,4 @@
+- name: add ssh key for asus
+    authorized_key:
+      user: asus
+      key: "ssh......................"
